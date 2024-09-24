@@ -34,7 +34,6 @@ coverage/
 
 # Cache
 .cache/
-public/
 tmp/
 temp/
 *.tmp
