@@ -2,7 +2,7 @@
 
 How to run:
 ```
-cd front-end
+cd star
 npm install
 npm start
 ```
