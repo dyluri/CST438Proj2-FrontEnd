@@ -1,8 +1,9 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from './Home';
 import SettingsScreen from './settings';
-// import InfoScreen from './favorites';
+import UserScreen from './user';
 import React from 'react';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const Tab = createBottomTabNavigator();
 
@@ -17,10 +18,31 @@ export default function Layout() {
       <Tab.Screen
         name="Home"
         component={HomeScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="home-outline" color={color} size={size} />
+          ), 
+        }}
       />
+
+<Tab.Screen
+        name="user"
+        component={UserScreen} 
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="person-outline" color={color} size={size} />
+          ),
+        }}
+      />
+
       <Tab.Screen
         name="settings"
         component={SettingsScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="settings-outline" color={color} size={size} />
+          ),
+        }}
       />
     </Tab.Navigator>
   );
