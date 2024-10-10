@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Image, StyleSheet, TextInput, View, TouchableOpacity, Text, Alert } from 'react-native';
 
-export default function HomeScreen() {
+export default function AdminHomeScreen() {
   const [searchTerm, setSearchTerm] = useState('');
 
   const handleSearch = () => {
@@ -13,7 +13,7 @@ export default function HomeScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.adsTextTop}>Place ads here</Text>
-      {/* Image */}
+      {/* Centered Image */}
       <View style={styles.imageContainer}>
         <Image
           source={require('@/assets/images/Wishlistimage.png')}
@@ -21,7 +21,7 @@ export default function HomeScreen() {
         />
       </View>
 
-      {/*Search Bar */}
+      {/* Search Bar */}
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}

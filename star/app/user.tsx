@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet } from 'react-native';
 //Simple Login does nothing
-export default function SettingsScreen() {
+export default function UserScreen() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 

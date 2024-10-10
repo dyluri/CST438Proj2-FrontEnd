@@ -1,29 +1,23 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
 export default function AdminScreen() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  // const navigation = useNavigation(); 
 
   const handleLogin = () => {
-    // Basic validation to check if fields are empty
-    if (!username || !password) {
-      setErrorMessage('Both fields are required!');
+    if (username === 'Admin' && password === 'Admin') {
+      
     } else {
-      setErrorMessage(''); // Clear any previous error message
-      Alert.alert('Login Successful', `Welcome, ${username}!`);
-      console.log('Login pressed:', { username, password });
+      Alert.alert('Login Failed', 'Incorrect username or password');
     }
   };
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Admin Login</Text>
-      
-      {/* Error message display */}
-      {errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
-
       <TextInput
         style={styles.input}
         placeholder="Username"
@@ -47,16 +41,10 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     padding: 16,
-    backgroundColor: '#f5f5f5',
   },
   title: {
     fontSize: 24,
     marginBottom: 16,
-    textAlign: 'center',
-  },
-  error: {
-    color: 'red',
-    marginBottom: 12,
     textAlign: 'center',
   },
   input: {
@@ -65,6 +53,5 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 12,
     paddingHorizontal: 8,
-    backgroundColor: '#fff',
   },
 });
