@@ -1,12 +1,25 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Text } from 'react-native';
+import bcrypt from 'bcryptjs';
 
 const LoginScreen = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = () => {
-    console.log('Logging in with:', username, password);
+  const user = 'dylan'
+  const hashedPassword = '$2y$10$RIA6QIMAMN7oj0kk7gIILemhOobNlLFTY5gGgPxotkys5E1CbJ5GW';
+
+  const handleLogin = async() => {
+    if (username == user){
+    const accepted = await bcrypt.compare(password, hashedPassword);
+    
+    if(accepted){
+      console.log('Login Successful!');
+    }
+    else{
+      console.log('Login Failed')
+    }
+  }
   };
 
   return (
