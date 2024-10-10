@@ -16,13 +16,15 @@ export default function Layout() {
       }}
     >
       <Tab.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="home-outline" color={color} size={size} />
-          ), 
-        }}
+
+        name="settings"
+          component={SettingsScreen}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Icon name="settings-outline" color={color} size={size} />
+            ),
+          }}
+
       />
 
 <Tab.Screen
@@ -36,13 +38,14 @@ export default function Layout() {
       />
 
       <Tab.Screen
-        name="settings"
-        component={SettingsScreen}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="settings-outline" color={color} size={size} />
-          ),
-        }}
+              name="Home"
+              component={HomeScreen}
+              options={{
+                tabBarIcon: ({ color, size }) => (
+                  <Icon name="home-outline" color={color} size={size} />
+                ), 
+              }}
+        
       />
     </Tab.Navigator>
   );
