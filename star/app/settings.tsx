@@ -5,29 +5,36 @@ import bcrypt from 'react-native-bcrypt';
 const LoginScreen = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const backEndURL = 'https://gentle-caverns-18774-60195da51722.herokuapp.com/newuser';
 
-  const backEndURL = ' https://gentle-caverns-18774-60195da51722.herokuapp.com/newuser'
-  const handleLogin = async() => {
+  const handleLogin = async () => {
     try {
-      
       const saltRounds = 10;
-      const hashedPassword = await bcrypt.hash(password, saltRounds);
-      // i need to replace placeholder, username and password 
-      const requestUrl = `${backEndURL}?username=${encodeURIComponent(username)}&password=${encodeURIComponent(hashedPassword)}`;
+      bcrypt.hash(password, saltRounds, async (err, hashedPassword) => {
+        if (err) {
+          console.error('Error hashing password:', err);
+          return;
+        }
 
-      const response = await fetch(backEndURL, {
-        method: 'POST',
-        body: JSON.stringify({
-          username: username,
-          password: hashedPassword, 
-        }),
+        const requestUrl = `${backEndURL}?username=${encodeURIComponent(username)}&password=${encodeURIComponent(hashedPassword)}`;
+        const response = await fetch(requestUrl, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            username: username,
+            password: hashedPassword,
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Registration successful:', data);
+        } else {
+          console.log('Registration failed');
+        }
       });
-      if (response.ok) {
-        const data = await response.json();
-        console.log('Registration successful:', data);
-      } else {
-        console.log('Registration failed');
-      }
     } catch (error) {
       console.error('Error during registration:', error);
     }
