@@ -21,7 +21,7 @@ export default function HomeScreen() {
         />
       </View>
 
-      {/* Centered Search Bar */}
+      {/* Centered Search Bar
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
@@ -32,10 +32,9 @@ export default function HomeScreen() {
         />
       </View>
 
-      {/* Search Button */}
       <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
         <Text style={styles.searchButtonText}>Search</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
       {/* Place Ads Here Text */}
       <Text style={styles.adsText}>Place ads here</Text>
