@@ -17,13 +17,16 @@ export default function Layout() {
       }}
     >
       <Tab.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="home-outline" color={color} size={size} />
-          ), 
-        }}
+              name="Home"
+              component={HomeScreen}
+              options={{
+                tabBarIcon: ({ color, size }) => (
+                  <Icon name="home-outline" color={color} size={size} />
+                ), 
+              }}
+        
+
+
       />
 
       <Tab.Screen
