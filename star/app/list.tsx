@@ -4,11 +4,11 @@ import axios from 'axios';
 import Toast from 'react-native-toast-message';
 
 export default function ListScreen() {
-  const user_id = 10; // Replace with dynamic user ID if available
+  const user_id = 10; 
   const [listName, setListName] = useState('');
   const [lists, setLists] = useState([]);
-  const [editingListId, setEditingListId] = useState(null); // State to track which list is being edited
-  const [modalVisible, setModalVisible] = useState(false); // State for modal visibility
+  const [editingListId, setEditingListId] = useState(null); 
+  const [modalVisible, setModalVisible] = useState(false); 
 
   const handleCreateList = async () => {
     if (!listName.trim()) {
@@ -22,8 +22,8 @@ export default function ListScreen() {
         user_id: user_id,
       });
       Toast.show({ type: 'success', text1: 'List created successfully!' });
-      setListName(''); // Reset the input field after success
-      fetchLists(); // Fetch updated list after creation
+      setListName(''); 
+      fetchLists(); 
     } catch (error) {
       console.error('Error creating list:', error);
       Toast.show({ type: 'error', text1: 'Failed to create list' });
@@ -36,7 +36,7 @@ export default function ListScreen() {
         data: { list_id, user_id },
       });
       Toast.show({ type: 'success', text1: 'List deleted successfully!' });
-      fetchLists(); // Refresh the list after deletion
+      fetchLists(); 
     } catch (error) {
       console.error('Error deleting list:', error);
       Toast.show({ type: 'error', text1: 'Failed to delete list' });
@@ -56,10 +56,10 @@ export default function ListScreen() {
         user_id: user_id,
       });
       Toast.show({ type: 'success', text1: 'List updated successfully!' });
-      setListName(''); // Reset the input field after success
-      setEditingListId(null); // Reset editing state
-      setModalVisible(false); // Close modal
-      fetchLists(); // Fetch updated list after editing
+      setListName(''); 
+      setEditingListId(null); 
+      setModalVisible(false); 
+      fetchLists(); 
     } catch (error) {
       console.error('Error updating list:', error);
       Toast.show({ type: 'error', text1: 'Failed to update list' });
@@ -78,7 +78,7 @@ export default function ListScreen() {
   };
 
   useEffect(() => {
-    fetchLists(); // Fetch lists when the component loads
+    fetchLists(); 
   }, []);
 
   const renderListItem = ({ item }) => (
@@ -87,8 +87,8 @@ export default function ListScreen() {
       <View style={styles.buttonContainer}>
         <TouchableOpacity onPress={() => {
           setEditingListId(item.list_id);
-          setListName(item.list_name); // Set the list name for editing
-          setModalVisible(true); // Open modal for editing
+          setListName(item.list_name); 
+          setModalVisible(true); 
         }} style={styles.editButton}>
           <Text style={styles.editButtonText}>Edit</Text>
         </TouchableOpacity>
@@ -117,7 +117,7 @@ export default function ListScreen() {
         ListEmptyComponent={<Text>No lists available</Text>}
       />
       
-      {/* Modal for editing list name */}
+      {/* Modal for edit */}
       <Modal
         animationType="slide"
         transparent={true}
