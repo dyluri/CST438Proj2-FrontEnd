@@ -50,6 +50,16 @@ export default function Layout() {
         }}
       />
 
+{/* <Tab.Screen
+        name="user"
+        component={UserScreen} 
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="person-outline" color={color} size={size} />
+          ),
+        }}
+      /> */}
+
       <Tab.Screen
         name="settings"
         component={SettingsScreen}
