@@ -2,6 +2,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from './Home';
 import SettingsScreen from './settings';
 import UserScreen from './user';
+import ItemSearch  from './ItemSearch';
 import React from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 
@@ -28,7 +29,17 @@ export default function Layout() {
 
       />
 
-<Tab.Screen
+      <Tab.Screen
+        name="ItemSearch"
+        component={ItemSearch}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="search" color={color} size={size} />
+          ), 
+        }}
+      />
+
+      <Tab.Screen
         name="user"
         component={UserScreen} 
         options={{
