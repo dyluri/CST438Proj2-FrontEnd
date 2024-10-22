@@ -1,10 +1,11 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import HomeScreen from './Home';
 import SettingsScreen from './settings';
-import UserScreen from './user';
+import UserScreen from './list';
 import ItemSearch  from './ItemSearch';
 import React from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
+import ListScreen from './list';
 
 const Tab = createBottomTabNavigator();
 
@@ -40,8 +41,8 @@ export default function Layout() {
       />
 
       <Tab.Screen
-        name="user"
-        component={UserScreen} 
+        name="list"
+        component={ListScreen} 
         options={{
           tabBarIcon: ({ color, size }) => (
             <Icon name="person-outline" color={color} size={size} />
