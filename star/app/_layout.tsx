@@ -3,8 +3,10 @@ import HomeScreen from './Home';
 import SettingsScreen from './settings';
 import UserScreen from './user';
 import ItemSearch  from './ItemSearch';
+import ItemScreen from './it/item';
 import React from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
+import RootLayout from './it/_layout';
 
 const Tab = createBottomTabNavigator();
 
@@ -45,6 +47,15 @@ export default function Layout() {
         options={{
           tabBarIcon: ({ color, size }) => (
             <Icon name="person-outline" color={color} size={size} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="it"
+        component={RootLayout}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="search" color={color} size={size} />
           ),
         }}
       />
