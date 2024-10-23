@@ -61,7 +61,8 @@ export default function ItemScreen({ route, navigation }) {
             <Text style={styles.itemName}> {item.item_name} </Text>
             {/* we should never see the not set, this is for old items in the db. */}
             <Text style={styles.itemName}> Quantity: {item.quantity ? item.quantity : "not set"}</Text>
-            <Button title="Edit Item" onPress={() => navigator.navigate('itemEdit')} />
+            <Button title="Edit Item" onPress={() => navigator.navigate('itemEdit', {item: item})} />
+            <View style={{padding:5}}/>
             <Button title="Remove Item" onPress={() => navigator.navigate('itemEdit')} color={'red'} />
         </View>
     );
@@ -106,7 +107,7 @@ export default function ItemScreen({ route, navigation }) {
                             <Text>You don't have any Items</Text>
                         )}
                     </View>
-                    <View style={{ flex: 4, justifyContent: 'center', justifyContent: 'flex-start' }}>
+                    <View style={{ flex: 2, justifyContent: 'center', justifyContent: 'flex-start', padding: 10 }}>
                         <Button title='Search For an Item!' onPress={() => navigator.navigate("ItemSearch")} color={'green'} />
                     </View>
                 </View>
@@ -123,7 +124,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'flex-start',
         alignItems: 'center',
-        width: "95%",
+        width: "100%",
         backgroundColor: '#f5f5f5',
     },
     header: {
@@ -159,6 +160,9 @@ const styles = StyleSheet.create({
     },
     scrollView: {
         width: width - 15,
-        flex: 6,
+        flex: 8,
+        backgroundColor: '#f5e1e1',
+        justifyContent: 'center',
+        marginTop: 0,
     },
 });
