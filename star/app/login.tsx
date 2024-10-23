@@ -11,34 +11,56 @@ export default function LoginScreen() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [hashedPassword, setHashedPassword] = useState('');
-  React.useEffect(() => {
-    axios.get(`${backEndURL}?username=${encodeURIComponent(username)}`).then((response) => {
-      if(response.data && response.data.password){
-        setHashedPassword(response.data.password);
-        console.log('Fetched Hash', response.data.password);
-      }else{
-        console.log('User not found');
-      }
-    })
-    .catch((error) =>{
-      console.error('Error', error)
-    });
-  }, [username]);
+  const [hashedPasswords, setHashedPasswords] = useState('');
 
-  function handleLogin() {
-    bcrypt.compare(password, hashedPassword, (err, match) => {
-      if (err) {
-        console.error('Error comparing passwords', err);
-        return;
-      }
 
-      if (match) {
-        console.log('Password match', match);
-      } else {
-        console.log('Password did not match');
+  const checkPassword = async() => {
+    const options = {
+      method: 'PUT',
+      url: 'https://gentle-caverns-18774-60195da51722.herokuapp.com/users?user_id=4'
+    }
+
+    try {
+      try {
+      const response = await axios.request(options);
+      setHashedPasswords(response.data);
+        for (var i = 0; i < hashedPasswords.length; i++) {
+          if (hashedPasswords[i].username == username) {
+            setHashedPassword(hashedPasswords[i].password);
+            console.log(hashedPassword);
+            try {
+            // TODO Compare password input with Hashed pasword to ensure they are correct
+            // if not give error and dont allow login
+            } catch(error){
+              //error
+            }
+          }
+        }
+      } catch (error) {
+        console.error('no user with this username');
       }
-    });
+    } catch (error) {
+      console.error('error getting hashed password');
+    }
+  };
+
+  const handleLogin = async() => {
+    const options = {
+      method: 'PUT',
+      url: backEndURL,
+      params: {
+        'username':username,
+        'password':hashedPassword
+      }
+    };
+    try{
+        //TODO
+    } catch(error) {
+      
+    }
+
   }
+
 
 return (
   <View style={styles.container}>
