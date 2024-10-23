@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Item } from '@/components/Types';
-import { Image, StyleSheet, TextInput, View, TouchableOpacity, Text, Alert, Button, StatusBar, ActivityIndicator, ScrollView, FlatList, Dimensions } from 'react-native';
+import { Image, StyleSheet, TextInput, View, TouchableOpacity, Text, Alert, Button, StatusBar, ActivityIndicator, ScrollView, FlatList, Dimensions, Linking } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
 
@@ -50,6 +50,9 @@ export default function ItemScreen({ route, navigation }) {
             setLoading(false);
         }
     };
+    const handlePress = (item) => {
+        Linking.openURL(item.item_url);
+    };
 
     const renderItem = ({ item }) => (
         <View style={styles.itemBox}>
@@ -58,9 +61,11 @@ export default function ItemScreen({ route, navigation }) {
                     ? { uri: item.image_url }
                     : require('@/assets/images/QuestionBox.jpg')
             } style={styles.image} />
-            <Text style={styles.itemName}> {item.item_name} </Text>
+            <TouchableOpacity onPress={() => handlePress(item)}>
+                <Text style={styles.itemName}>{item.item_name}</Text>
+            </TouchableOpacity>
             {/* we should never see the not set, this is for old items in the db. */}
-            <Text style={styles.itemName}> Quantity: {item.quantity ? item.quantity : "not set"}</Text>
+            <Text style={{fontSize:16}}> Quantity: {item.quantity ? item.quantity : "not set"}</Text>
             <Button title="Edit Item" onPress={() => navigator.navigate('itemEdit', {item: item})} />
             <View style={{padding:5}}/>
             <Button title="Remove Item" onPress={() => navigator.navigate('itemEdit')} color={'red'} />
@@ -157,6 +162,8 @@ const styles = StyleSheet.create({
     itemName: {
         fontSize: 16,
         textAlign: 'center',
+        color: 'navy',
+        textDecorationLine: 'underline',
     },
     scrollView: {
         width: width - 15,
