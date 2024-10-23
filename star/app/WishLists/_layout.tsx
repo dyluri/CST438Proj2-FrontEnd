@@ -3,7 +3,8 @@ import 'react-native-reanimated';
 
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ItemScreen from './item';
-import DetailsScreen from './itemdetails';
+import DetailsScreen from './itemEdit';
+import ItemSearch from './ItemSearch';
 
 
 const Stack = createNativeStackNavigator();
@@ -21,8 +22,13 @@ export default function RootLayout() {
                         options={{ headerShown: false }}
                     />
                     <Stack.Screen
-                        name="itemdetails"
+                        name="itemEdit"
                         component={DetailsScreen}
+                        options={{ headerShown: false }}
+                    />
+                    <Stack.Screen
+                        name="ItemSearch"
+                        component={ItemSearch}
                         options={{ headerShown: false }}
                     />
                 </Stack.Navigator>

@@ -6,7 +6,6 @@ import { useNavigation } from '@react-navigation/native';
 /*
     route.params = {
         listID = passed in number of current list being edited
-        items = array of items from this list id.
     }
 
 */
