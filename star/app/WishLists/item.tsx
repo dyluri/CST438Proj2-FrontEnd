@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { Item } from '@/components/Types';
 import { Image, StyleSheet, TextInput, View, TouchableOpacity, Text, Alert, Button, StatusBar, ActivityIndicator, ScrollView, FlatList, Dimensions, Linking } from 'react-native';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import Toast from 'react-native-toast-message';
+import { UserContext } from '@/components/Currentuser';
 
 
 const { width } = Dimensions.get('window');
@@ -15,18 +16,17 @@ const { width } = Dimensions.get('window');
 */
 export default function ItemScreen({ route, navigation }) {
     const navigator = useNavigation();
-    console.log('Route Params:', route.params);
-    // real edition
 
     // const [listId, setListId] = useState(route.params.listId);
     // Test mode 
-    const [listId, setListId] = useState(3);
+    // const [listId, setListId] = useState(3);
+    const { listId, listName} = useContext(UserContext);
 
 
     const [isLoading, setLoading] = useState(true);
     const [listData, setListData] = useState([]);
 
-    console.log('list id is', listId);
+    console.log('list id is', listId, listName);
 
     const getItemsInList = async (listId: number) => {
         console.log("started");
@@ -42,9 +42,7 @@ export default function ItemScreen({ route, navigation }) {
             const data = await response.json();
             console.log(data);
             setListData(data);
-            Toast.show({ type: 'error', text1: "Item added to list" });
         } catch (error) {
-            Toast.show({ type: 'error', text1: "Error adding Item to list" });
             console.error('Error:', error);
         } finally {
             setLoading(false);
@@ -113,7 +111,7 @@ export default function ItemScreen({ route, navigation }) {
             <View style={styles.header}>
                 <View style={{ flex: 1, flexDirection: 'row', }}>
                     <View >
-                        <Button title='Back' onPress={() => navigator.navigate('item')} color={"red"} />
+                        <Button title='Back' onPress={() => console.log(navigator.getParent()?.getState().routeNames)} color={"red"} />
                     </View>
                 </View>
             </View>
@@ -125,7 +123,7 @@ export default function ItemScreen({ route, navigation }) {
                 <View style={{ alignItems: 'center' }}>
                     <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'center' }}>
                         <View >
-                            <Text style={styles.title}>Here would  list name</Text>
+                            <Text style={styles.title}>{listName}</Text>
                         </View>
                     </View>
                     <View style={styles.scrollView}>

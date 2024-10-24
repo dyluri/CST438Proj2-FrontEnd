@@ -1,11 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, StyleSheet, Button, TextInput, FlatList, TouchableOpacity, Modal, Image } from 'react-native';
 import axios from 'axios';
 import Toast from 'react-native-toast-message';
+import { UserContext } from '@/components/Currentuser';
+import { useNavigation } from '@react-navigation/native';
 
-export default function ListScreen() {
-  const user_id = 10; 
-  const [listName, setListName] = useState('');
+export default function ListScreen({ route, navigation }) {
+  const { userId, setListId, setListName } = useContext(UserContext);
+  const user_id = userId;
+  const navigator = useNavigation();
+  const [listName, setLocalListName] = useState('');
   const [lists, setLists] = useState([]);
   const [editingListId, setEditingListId] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -24,7 +28,7 @@ export default function ListScreen() {
         user_id: user_id,
       });
       Toast.show({ type: 'success', text1: 'List created successfully!' });
-      setListName('');
+      setLocalListName('');
       fetchLists(); 
     } catch (error) {
       console.error('Error creating list:', error);
@@ -76,7 +80,13 @@ export default function ListScreen() {
       <Text style={styles.cardTitle}>{item.list_name}</Text>
       <View style={styles.buttonContainer}>
         <TouchableOpacity 
-          onPress={() => fetchItems(item.list_id)} 
+          onPress={() => {
+            setListId(item.list_id);
+            setListName(item.list_name);
+            console.log(navigator.getState()?.routeNames);
+            navigator.navigate('WishLists');
+
+          }} 
           style={styles.viewButton}
         >
           <Text style={styles.viewButtonText}>View List</Text>
@@ -95,7 +105,7 @@ export default function ListScreen() {
         style={styles.input}
         placeholder="Enter list name"
         value={listName}
-        onChangeText={setListName}
+        onChangeText={setLocalListName}
       />
       <Button title="Create List" onPress={handleCreateList} />
       <FlatList

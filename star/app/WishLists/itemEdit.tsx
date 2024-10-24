@@ -54,9 +54,9 @@ export default function DetailsScreen({ route, navigation }) {
 
             const data = await response.json();
             console.log(data);
-            Toast.show({ type: 'error', text1: "Item added to list" });
+            Toast.show({ type: 'error', text1: "Item has been updated!" });
         } catch (error) {
-            Toast.show({ type: 'error', text1: "Error adding Item to list" });
+            Toast.show({ type: 'error', text1: "Error updating item" });
             console.error('Error:', error);
         } finally {
             navigator.navigate('item', {listId: listId});

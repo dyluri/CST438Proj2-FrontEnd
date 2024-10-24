@@ -8,10 +8,14 @@ function CurrentUser({ children }) {
     //     [name    ,   setter   ]  useState<type>(starting value)
     const [username, setUsername] = useState<string>('fail');
     const [userId, setUserId] = useState<number>(-1);
-    
+    const [listId, setListId] = useState<number>(3);
+    const [listName, setListName] = useState<string>('No List Selected');
+
     const value = { 
         username, setUsername,
         userId, setUserId,
+        listName, setListName,
+        listId, setListId,
     };
 
     return (

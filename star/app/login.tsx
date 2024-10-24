@@ -3,6 +3,7 @@ import { View, TextInput, Button, StyleSheet, Text, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { UserContext } from '@/components/Currentuser';
+import { useNavigation } from '@react-navigation/native';
 
 const backEndURL = 'https://gentle-caverns-18774-60195da51722.herokuapp.com/login';
 
@@ -10,7 +11,7 @@ const LoginScreen = () => {
   const [localusername, setLocalUsername] = useState('');
   const [password, setPassword] = useState('');
   const {setUsername, setUserId } = useContext(UserContext);
-
+  const navigation = useNavigation();
 
   const handleLogin = async () => {
     try {
@@ -25,6 +26,14 @@ const LoginScreen = () => {
       }
       setUsername(response.data.username);
       setUserId(response.data.user_id);
+
+
+
+
+
+
+
+      navigation.navigate('list',)
     } catch (err) {
       console.error('Error during login:', err);
     }

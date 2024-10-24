@@ -1,12 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, StyleSheet, Text, Image, FlatList, TextInput, TouchableOpacity, Modal, Button, ActivityIndicator } from 'react-native';
 import Toast from 'react-native-toast-message';
 import axios from 'axios';
-import { useNavigation } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { UserContext } from '@/components/Currentuser';
 
 const ItemSearch = () => {
     const navigation = useNavigation();
-    const user_id = 0; // TODO: Fetch current user ID dynamically
+    const {userId} = useContext(UserContext);
+    // console.log("on the item search page", userId);
     const x_apiKey = 'I3LhyAtcw7WM4WpBJpDvbjuMza3S5I7V';
     const [searchTerm, setSearchTerm] = useState('');
     const [itemData, setItemData] = useState([]);
@@ -110,7 +112,7 @@ const ItemSearch = () => {
             });
     
             const data = await response.json();
-            //console.log('Item added:', data);
+            console.log('Item added:', data);
             closeModal();
             Toast.show({type: 'error', text1: "Item added to list"});
         } catch (error) {
@@ -127,9 +129,9 @@ const ItemSearch = () => {
     const fetchLists = async () => {
         const options = {
             method: 'GET',
-            url: 'https://gentle-caverns-18774-60195da51722.herokuapp.com/lists',
+            url: `https://gentle-caverns-18774-60195da51722.herokuapp.com/lists`,
             params: {
-                'user_id': user_id,
+                user_id: userId,
             }
         };
         try {
