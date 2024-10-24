@@ -1,18 +1,9 @@
-import React, { useState } from 'react';
-import { Image, StyleSheet, TextInput, View, TouchableOpacity, Text, Alert } from 'react-native';
+import { Image, StyleSheet, View, Text} from 'react-native';
 
 export default function HomeScreen() {
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const handleSearch = () => {
-    if (searchTerm.trim()) {
-      console.log('Searching for:', searchTerm);
-    }
-  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.adsTextTop}>Place ads here</Text>
       {/* Centered Image */}
       <View style={styles.imageContainer}>
         <Image
@@ -21,23 +12,6 @@ export default function HomeScreen() {
         />
       </View>
 
-      {/* Centered Search Bar
-      <View style={styles.searchContainer}>
-        <TextInput
-          style={styles.searchInput}
-          placeholder="Search..."
-          placeholderTextColor="#888"
-          value={searchTerm} 
-          onChangeText={(text) => setSearchTerm(text)} 
-        />
-      </View>
-
-      <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
-        <Text style={styles.searchButtonText}>Search</Text>
-      </TouchableOpacity> */}
-
-      {/* Place Ads Here Text */}
-      <Text style={styles.adsText}>Place ads here</Text>
     </View>
   );
 }
