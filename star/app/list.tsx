@@ -9,8 +9,8 @@ export default function ListScreen() {
   const [lists, setLists] = useState([]);
   const [editingListId, setEditingListId] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-  const [items, setItems] = useState([]); // State for items
-  const [viewItemsModalVisible, setViewItemsModalVisible] = useState(false); // State for view items modal
+  const [items, setItems] = useState([]);
+  const [viewItemsModalVisible, setViewItemsModalVisible] = useState(false);
 
   const handleCreateList = async () => {
     if (!listName.trim()) {
@@ -49,7 +49,7 @@ export default function ListScreen() {
     try {
       const response = await axios.get(`https://gentle-caverns-18774-60195da51722.herokuapp.com/items?list_id=${list_id}`);
       setItems(response.data);
-      setViewItemsModalVisible(true); // Show modal after fetching items
+      setViewItemsModalVisible(true); 
     } catch (error) {
       console.error('Error fetching items:', error);
       Toast.show({ type: 'error', text1: 'Failed to fetch items' });
@@ -76,7 +76,7 @@ export default function ListScreen() {
       <Text style={styles.cardTitle}>{item.list_name}</Text>
       <View style={styles.buttonContainer}>
         <TouchableOpacity 
-          onPress={() => fetchItems(item.list_id)} // Fetch items on press
+          onPress={() => fetchItems(item.list_id)} 
           style={styles.viewButton}
         >
           <Text style={styles.viewButtonText}>View List</Text>
@@ -118,7 +118,7 @@ export default function ListScreen() {
             <Text style={styles.modalTitle}>Items in List</Text>
             <FlatList
               data={items}
-              keyExtractor={(item) => item.item_id.toString()} // Assuming item_id is available
+              keyExtractor={(item) => item.item_id.toString()} 
               renderItem={({ item }) => (
                 <View style={styles.itemContainer}>
                   <Image source={{ uri: item.image_url }} style={styles.itemImage} />
