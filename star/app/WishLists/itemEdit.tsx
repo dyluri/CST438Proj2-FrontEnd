@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import { Item } from '@/components/Types';
-import { Image, StyleSheet, TextInput, View, TouchableOpacity, Text, Alert, Button, StatusBar, Linking, Modal, Dimensions } from 'react-native';
+import { Image, StyleSheet, TextInput, View, TouchableOpacity, Text, Alert, Button, StatusBar, Linking, Modal, Dimensions, ActivityIndicator } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import Toast from 'react-native-toast-message';
 
 /*
     route.params = {
         listID = passed in number of current list being edited
         item = {
+            item_id: number;
             item_name: string;
             list_id: number;
             item_url: string;
@@ -30,6 +32,37 @@ export default function DetailsScreen({ route, navigation }) {
     const [imageUrl, setImageUrl] = useState(item.image_url);
     const [itemUrl, setItemUrl] = useState(item.item_url);
     const [currentMod, setCurrentMod] = useState('');
+    const [loading, setLoading] = useState(false);
+
+    const saveItemToList = async () => {
+        console.log("started");
+        const url = `https://gentle-caverns-18774-60195da51722.herokuapp.com/items`;
+        try {
+            const response = await fetch(url, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    item_id: item.item_id,
+                    item_url: itemUrl,
+                    image_url: imageUrl,
+                    description: description,
+                    quantity: quantity,
+                }),
+            });
+
+            const data = await response.json();
+            console.log(data);
+            Toast.show({ type: 'error', text1: "Item added to list" });
+        } catch (error) {
+            Toast.show({ type: 'error', text1: "Error adding Item to list" });
+            console.error('Error:', error);
+        } finally {
+            navigator.navigate('item', {listId: listId});
+        }
+    };
+
     const changeQuant = (num: number) => {
         if (quantity + num >= 0) {
             setQuantity(quantity + num);
@@ -51,6 +84,7 @@ export default function DetailsScreen({ route, navigation }) {
 
     const renderItem = () => {
         if (currentMod == 'Product_Url') {
+            return (
             <TextInput
                 style={[styles.input, styles.inputText]}
                 placeholder={itemUrl}
@@ -58,6 +92,7 @@ export default function DetailsScreen({ route, navigation }) {
                 onChangeText={setItemUrl}
                 multiline={true}
             />
+            )
         }
         if (currentMod == 'Description') {
             return (
@@ -73,6 +108,7 @@ export default function DetailsScreen({ route, navigation }) {
         console.log(currentMod);
 
         if (currentMod == 'Image_Url') {
+            return (
             <TextInput
                 style={[styles.input, styles.inputText]}
                 placeholder={imageUrl}
@@ -80,6 +116,7 @@ export default function DetailsScreen({ route, navigation }) {
                 onChangeText={setImageUrl}
                 multiline={true}
             />
+            )
         }
         return(
             <View><Text>Fail</Text></View>
@@ -136,7 +173,11 @@ export default function DetailsScreen({ route, navigation }) {
                     </View>
                 </View> 
                 <View style={{ padding: 10 }}>
-                    <Button title='save' onPress={() => console.log("would save")} />
+                    {loading ? (
+                        <ActivityIndicator size="large" color="#0000ff" />
+                    ) : (
+                        <Button title="save" onPress={saveItemToList} />
+                    )}
                 </View>
             </View>
             <Modal
