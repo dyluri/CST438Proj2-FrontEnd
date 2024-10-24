@@ -1,18 +1,22 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, Text, Image, FlatList, TextInput, TouchableOpacity, Modal, Button } from 'react-native';
+import React, { useState, useEffect, useContext } from 'react';
+import { View, StyleSheet, Text, Image, FlatList, TextInput, TouchableOpacity, Modal, Button, ActivityIndicator } from 'react-native';
 import Toast from 'react-native-toast-message';
 import axios from 'axios';
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect, useNavigation } from '@react-navigation/native';
+import { UserContext } from '@/components/Currentuser';
 
 const ItemSearch = () => {
-    const user_id = 10; // TODO: Fetch current user ID dynamically
+    const navigation = useNavigation();
+    const {userId, setListId, setListName } = useContext(UserContext);
+    // console.log("on the item search page", userId);
     const x_apiKey = 'I3LhyAtcw7WM4WpBJpDvbjuMza3S5I7V';
     const [searchTerm, setSearchTerm] = useState('');
     const [itemData, setItemData] = useState([]);
     const [listData, setListData] = useState([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
-
+    const [loading, setLoading] = useState(false);
+    const [listLoading, setListLoading] = useState(false);
     const openModal = (item) => {
         setSelectedItem(item);
         getDescription(item);
@@ -30,6 +34,7 @@ const ItemSearch = () => {
     */
     const handleSearch = async () => {
         if (searchTerm.trim()) {
+            setLoading(true);
             const options = {
                 method: 'GET',
                 url: 'https://get.scrapehero.com/amz/keyword-search/',
@@ -45,6 +50,8 @@ const ItemSearch = () => {
             } catch (error) {
                 Toast.show({ type: 'error', text1: 'No Items Found' });
                 console.log('Error fetching data:', error);
+            } finally {
+                setLoading(false);
             }
         }
     };
@@ -79,10 +86,10 @@ const ItemSearch = () => {
     *   wishlist.
     */
     const handleAddItem = async (list, item) => {
+        setListLoading(true);
         const itemDescription = await getDescription(item);
+        setListLoading(false);
 
-        closeModal();
-        
         if (!selectedItem) return; // Check if selectedItem is valid
         const truncatedName = item.name.length > 64 ? item.name.slice(0, 61) + '...' : item.name;
         const url = 'https://gentle-caverns-18774-60195da51722.herokuapp.com/items';
@@ -104,21 +111,30 @@ const ItemSearch = () => {
             });
     
             const data = await response.json();
-            //console.log('Item added:', data);
+            console.log('Item added:', data);
             closeModal();
             Toast.show({type: 'error', text1: "Item added to list"});
         } catch (error) {
             Toast.show({type: 'error', text1: "Error adding Item to list"});
             console.error('Error:', error);
+        } finally {
+            console.log('navigating to item.tsx', list.list_id);
+            
+            setListId(list.list_id);
+            setListName(list.list_name);
+            navigation.navigate('WishLists');
+            navigation.navigate('item', {
+                listId: list.list_id
+            });
         }
     };
 
     const fetchLists = async () => {
         const options = {
             method: 'GET',
-            url: 'https://gentle-caverns-18774-60195da51722.herokuapp.com/lists',
+            url: `https://gentle-caverns-18774-60195da51722.herokuapp.com/lists`,
             params: {
-                'user_id': user_id,
+                user_id: userId,
             }
         };
         try {
@@ -133,7 +149,7 @@ const ItemSearch = () => {
     useFocusEffect(
         React.useCallback(() => {
             fetchLists();
-        }, [])
+        }, [loading])
     );
 
     
@@ -157,6 +173,9 @@ const ItemSearch = () => {
         <View style={styles.container}>
             <Text style={styles.title}>Item Search</Text>
             <View style={styles.searchContainer}>
+                <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('WishLists')}>
+                    <Text style={styles.searchButtonText}>Return</Text>
+                </TouchableOpacity>
                 <TextInput
                     style={styles.searchInput}
                     placeholder="Search..."
@@ -168,7 +187,11 @@ const ItemSearch = () => {
                     <Text style={styles.searchButtonText}>Search</Text>
                 </TouchableOpacity>
             </View>
-            {itemData.length > 0 ? (
+            
+
+            {loading ? ( // Show loading spinner when loading state is true
+                <ActivityIndicator size="large" color="#007BFF" />
+            ) : itemData.length > 0 ? (
                 <FlatList
                     data={itemData}
                     renderItem={renderItem}
@@ -187,17 +210,27 @@ const ItemSearch = () => {
             >
                 <View style={styles.modalContainer}>
                     <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>
-                            Add {selectedItem?.name.slice(0, 20) + (selectedItem?.name.length > 20 ? '...' : '')} to:
-                        </Text>
-                        {listData.length > 0 ? (
-                            <FlatList
-                                data={listData}
-                                renderItem={renderLists}
-                                keyExtractor={(item) => item.list_id.toString()}
-                            />
+
+                        {listLoading ? (
+                            <View style={{ justifyContent: 'center', alignItems: 'center', margin: 20 }}>
+                                <Text>Collecting Info on Item!</Text>
+                                <ActivityIndicator size="large" color="#007BFF" />
+                            </View>
                         ) : (
-                            <Text>You don't have any lists</Text>
+                            <>
+                                <Text style={styles.modalTitle}>
+                                    Add {selectedItem?.name.slice(0, 20) + (selectedItem?.name.length > 20 ? '...' : '')} to:
+                                </Text>
+                                {listData.length > 0 ? (
+                                    <FlatList
+                                        data={listData}
+                                        renderItem={renderLists}
+                                        keyExtractor={(item) => item.list_id.toString()}
+                                    />
+                                ) : (
+                                    <Text>You don't have any lists</Text>
+                                )}
+                            </>
                         )}
                         <Button title="Close" onPress={closeModal} />
                     </View>
@@ -234,6 +267,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.2,
         shadowRadius: 5,
         elevation: 5,
+        margin: 5,
     },
     searchButton: {
         backgroundColor: '#007BFF',
@@ -300,7 +334,19 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+        marginVertical: 10,
     },
+    backButton : {
+        backgroundColor: 'red',
+        paddingVertical: 10,
+        paddingHorizontal: 5,
+        borderRadius: 10,
+        elevation: 3,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 5,
+    }
 });
 
 export default ItemSearch;
