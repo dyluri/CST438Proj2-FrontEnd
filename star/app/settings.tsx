@@ -31,7 +31,7 @@ const LoginScreen = () => {
 
         if (response.ok) {
           const data = await response.json();
-          console.log('Registration successful:', data);
+          console.log('Registration successful', data);
         } else {
           console.log('Registration failed');
         }
