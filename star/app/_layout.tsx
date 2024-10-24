@@ -3,6 +3,7 @@ import HomeScreen from './Home';
 import SettingsScreen from './settings';
 import UserScreen from './user';
 import LoginScreen from './login';
+import ItemSearch  from './ItemSearch';
 import React from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { CurrentUser } from '@/components/Currentuser';
@@ -43,7 +44,17 @@ export default function Layout() {
 
       />
 
-<Tab.Screen
+      <Tab.Screen
+        name="ItemSearch"
+        component={ItemSearch}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="search" color={color} size={size} />
+          ), 
+        }}
+      />
+
+      <Tab.Screen
         name="user"
         component={UserScreen} 
         options={{
