@@ -5,11 +5,13 @@ import UserScreen from './user';
 import LoginScreen from './login';
 import React from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
+import { CurrentUser } from '@/components/Currentuser';
 
 const Tab = createBottomTabNavigator();
 
 export default function Layout() {
   return (
+    <CurrentUser>
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
@@ -61,5 +63,6 @@ export default function Layout() {
         }}
       />
     </Tab.Navigator>
+    </CurrentUser>
   );
 }

@@ -1,38 +1,33 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Text, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import { UserContext } from '@/components/Currentuser';
 
 const backEndURL = 'https://gentle-caverns-18774-60195da51722.herokuapp.com/login';
 
 const LoginScreen = () => {
-  const [username, setUsername] = useState('');
+  const [localusername, setLocalUsername] = useState('');
   const [password, setPassword] = useState('');
+  const {setUsername, setUserId } = useContext(UserContext);
 
-  const storeUserID = async(userID: { toString: () => string; }) =>{
-    try{
-      await AsyncStorage.setItem('user_id', userID.toString());
-      console.log('User ID Stored Succesfully;', userID)
-    }catch(err){
-      console.error('Failed To Store ID', err);
-    }
-  };
 
   const handleLogin = async () => {
     try {
       const response = await axios.put(
-        `${backEndURL}?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,
+        `${backEndURL}?username=${encodeURIComponent(localusername)}&password=${encodeURIComponent(password)}`,
       );
-      console.log(response.data.user_id);
+      console.log(response.data);
       if (response.status == 200) {
         console.log('Login Successful')
       } else {
         console.log('Login Failed')
       }
+      setUsername(response.data.username);
+      setUserId(response.data.user_id);
     } catch (err) {
       console.error('Error during login:', err);
     }
-    
   };
 
   return (
@@ -41,8 +36,8 @@ const LoginScreen = () => {
       <TextInput
         style={styles.input}
         placeholder="Username"
-        onChangeText={setUsername}
-        value={username}
+        onChangeText={setLocalUsername}
+        value={localusername}
       />
       <TextInput
         style={styles.input}
