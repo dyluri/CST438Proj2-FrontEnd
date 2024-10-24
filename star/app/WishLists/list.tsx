@@ -9,6 +9,7 @@ export default function ListScreen({ route, navigation }) {
   const { userId, setListId, setListName } = useContext(UserContext);
   const user_id = userId;
   const navigator = useNavigation();
+  console.log('Current initial route:', navigator.getState().routes[0]?.name);
   const [listName, setLocalListName] = useState('');
   const [lists, setLists] = useState([]);
   const [editingListId, setEditingListId] = useState(null);
@@ -84,7 +85,7 @@ export default function ListScreen({ route, navigation }) {
             setListId(item.list_id);
             setListName(item.list_name);
             console.log(navigator.getState()?.routeNames);
-            navigator.navigate('WishLists');
+            navigator.navigate('item');
 
           }} 
           style={styles.viewButton}

@@ -33,7 +33,7 @@ const LoginScreen = () => {
 
 
 
-      navigation.navigate('list',)
+      navigation.navigate('WishLists')
     } catch (err) {
       console.error('Error during login:', err);
     }

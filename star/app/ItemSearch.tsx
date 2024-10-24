@@ -7,7 +7,7 @@ import { UserContext } from '@/components/Currentuser';
 
 const ItemSearch = () => {
     const navigation = useNavigation();
-    const {userId} = useContext(UserContext);
+    const {userId, setListId, setListName } = useContext(UserContext);
     // console.log("on the item search page", userId);
     const x_apiKey = 'I3LhyAtcw7WM4WpBJpDvbjuMza3S5I7V';
     const [searchTerm, setSearchTerm] = useState('');
@@ -89,7 +89,6 @@ const ItemSearch = () => {
         setListLoading(true);
         const itemDescription = await getDescription(item);
         setListLoading(false);
-        setListLoading(false);
 
         if (!selectedItem) return; // Check if selectedItem is valid
         const truncatedName = item.name.length > 64 ? item.name.slice(0, 61) + '...' : item.name;
@@ -120,6 +119,10 @@ const ItemSearch = () => {
             console.error('Error:', error);
         } finally {
             console.log('navigating to item.tsx', list.list_id);
+            
+            setListId(list.list_id);
+            setListName(list.list_name);
+            navigation.navigate('WishLists');
             navigation.navigate('item', {
                 listId: list.list_id
             });
@@ -146,7 +149,7 @@ const ItemSearch = () => {
     useFocusEffect(
         React.useCallback(() => {
             fetchLists();
-        }, [])
+        }, [loading])
     );
 
     
@@ -170,7 +173,7 @@ const ItemSearch = () => {
         <View style={styles.container}>
             <Text style={styles.title}>Item Search</Text>
             <View style={styles.searchContainer}>
-                <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+                <TouchableOpacity style={styles.backButton} onPress={() => navigation.navigate('WishLists')}>
                     <Text style={styles.searchButtonText}>Return</Text>
                 </TouchableOpacity>
                 <TextInput

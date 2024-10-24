@@ -111,7 +111,7 @@ export default function ItemScreen({ route, navigation }) {
             <View style={styles.header}>
                 <View style={{ flex: 1, flexDirection: 'row', }}>
                     <View >
-                        <Button title='Back' onPress={() => console.log(navigator.getParent()?.getState().routeNames)} color={"red"} />
+                        <Button title='Back' onPress={() => console.log(navigator.navigate('list'))} color={"red"} />
                     </View>
                 </View>
             </View>
@@ -139,7 +139,7 @@ export default function ItemScreen({ route, navigation }) {
                         )}
                     </View>
                     <View style={{ flex: 2, justifyContent: 'center', justifyContent: 'flex-start', padding: 10 }}>
-                        <Button title='Search For an Item!' onPress={() => navigator.navigate("ItemSearch")} color={'green'} />
+                        <Button title='Search For an Item!' onPress={() => navigator.getParent()?.navigate("ItemSearch")} color={'green'} />
                     </View>
                 </View>
             )}
