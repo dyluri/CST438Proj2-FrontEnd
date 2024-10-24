@@ -6,6 +6,7 @@ import LoginScreen from './login';
 import ItemSearch  from './ItemSearch';
 import React from 'react';
 import Icon from 'react-native-vector-icons/Ionicons';
+import ListScreen from './list';
 import { CurrentUser } from '@/components/Currentuser';
 
 const Tab = createBottomTabNavigator();
@@ -55,6 +56,16 @@ export default function Layout() {
       />
 
       <Tab.Screen
+        name="list"
+        component={ListScreen} 
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="person-outline" color={color} size={size} />
+          ),
+        }}
+      />
+
+{/* <Tab.Screen
         name="user"
         component={UserScreen} 
         options={{
@@ -62,7 +73,7 @@ export default function Layout() {
             <Icon name="person-outline" color={color} size={size} />
           ),
         }}
-      />
+      /> */}
 
       <Tab.Screen
         name="settings"
