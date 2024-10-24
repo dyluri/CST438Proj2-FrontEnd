@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import { UserContext } from '@/components/Currentuser';
+import React, { useContext, useState } from 'react';
 import { Image, StyleSheet, TextInput, View, TouchableOpacity, Text, Alert } from 'react-native';
 
 export default function HomeScreen() {
   const [searchTerm, setSearchTerm] = useState('');
+  const {username, userId } = useContext(UserContext);
 
+  console.log(username, userId);
   const handleSearch = () => {
     if (searchTerm.trim()) {
       console.log('Searching for:', searchTerm);

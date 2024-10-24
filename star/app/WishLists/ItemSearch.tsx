@@ -54,6 +54,8 @@ const ItemSearch = () => {
         }
     };
 
+    
+
     /*
     *   Uses the amazon product details API to get an
     *   items description. This is because the keyword api
@@ -122,27 +124,30 @@ const ItemSearch = () => {
         }
     };
 
-    useEffect(() => {
-        /*
-        * Gets the users list form the database using our backend api
-        */
-        const fetchLists = async () => {
-            const options = {
-                method: 'GET',
-                url: 'https://gentle-caverns-18774-60195da51722.herokuapp.com/lists',
-                params: {
-                    'user_id': user_id,
-                }
-            };
-            try {
-                const response = await axios.request(options);
-                setListData(response.data || []);
-            } catch (error) {
-                console.error('Error fetching lists:', error);
+    const fetchLists = async () => {
+        const options = {
+            method: 'GET',
+            url: 'https://gentle-caverns-18774-60195da51722.herokuapp.com/lists',
+            params: {
+                'user_id': user_id,
             }
         };
-        fetchLists();
-    }, []);
+        try {
+            const response = await axios.request(options);
+            setListData(response.data || []);
+        } catch (error) {
+            console.error('Error fetching lists:', error);
+        }
+    };
+
+    // Use useFocusEffect to fetch lists whenever the screen is focused
+    useFocusEffect(
+        React.useCallback(() => {
+            fetchLists();
+        }, [])
+    );
+
+    
 
     const renderItem = ({ item }) => (
         <View style={styles.itemBox}>
