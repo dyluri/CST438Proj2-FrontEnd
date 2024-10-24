@@ -64,6 +64,7 @@ export default function ListScreen() {
     </View>
   );
 
+  
   const renderItem = ({ item }) => (
     <View style={styles.itemCard}>
       <Image source={{ uri: item.image_url }} style={styles.itemImage} />
