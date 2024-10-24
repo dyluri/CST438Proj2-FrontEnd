@@ -7,14 +7,53 @@ export default function ListScreen() {
   const user_id = 10; 
   const [listName, setListName] = useState('');
   const [lists, setLists] = useState([]);
-  const [items, setItems] = useState([]); 
-  const [editingListId, setEditingListId] = useState(null); 
+  const [editingListId, setEditingListId] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [items, setItems] = useState([]); // State for items
+  const [viewItemsModalVisible, setViewItemsModalVisible] = useState(false); // State for view items modal
 
   const handleCreateList = async () => {
+    if (!listName.trim()) {
+      Toast.show({ type: 'error', text1: 'List name is required' });
+      return;
+    }
+
+    try {
+      await axios.post('https://gentle-caverns-18774-60195da51722.herokuapp.com/lists/add', {
+        list_name: listName,
+        user_id: user_id,
+      });
+      Toast.show({ type: 'success', text1: 'List created successfully!' });
+      setListName('');
+      fetchLists(); 
+    } catch (error) {
+      console.error('Error creating list:', error);
+      Toast.show({ type: 'error', text1: 'Failed to create list' });
+    }
   };
 
   const handleDeleteList = async (list_id) => {
+    try {
+      await axios.delete('https://gentle-caverns-18774-60195da51722.herokuapp.com/lists/delete', {
+        data: { list_id, user_id },
+      });
+      Toast.show({ type: 'success', text1: 'List deleted successfully!' });
+      fetchLists(); 
+    } catch (error) {
+      console.error('Error deleting list:', error);
+      Toast.show({ type: 'error', text1: 'Failed to delete list' });
+    }
+  };
+
+  const fetchItems = async (list_id) => {
+    try {
+      const response = await axios.get(`https://gentle-caverns-18774-60195da51722.herokuapp.com/items?list_id=${list_id}`);
+      setItems(response.data);
+      setViewItemsModalVisible(true); // Show modal after fetching items
+    } catch (error) {
+      console.error('Error fetching items:', error);
+      Toast.show({ type: 'error', text1: 'Failed to fetch items' });
+    }
   };
 
   const fetchLists = async () => {
@@ -28,24 +67,6 @@ export default function ListScreen() {
     }
   };
 
-  const fetchItemsForList = async (list_id) => {
-    try {
-      const response = await axios.get(`https://gentle-caverns-18774-60195da51722.herokuapp.com/items`, {
-        params: { list_id },
-      });
-      setItems(response.data);
-    } catch (error) {
-      console.error('Error fetching items:', error);
-      Toast.show({ type: 'error', text1: 'Failed to fetch items' });
-    }
-  };
-
-  const openItemModal = (list_id) => {
-    setEditingListId(list_id);
-    fetchItemsForList(list_id); 
-    setModalVisible(true); 
-  };
-
   useEffect(() => {
     fetchLists(); 
   }, []);
@@ -54,22 +75,16 @@ export default function ListScreen() {
     <View style={styles.card}>
       <Text style={styles.cardTitle}>{item.list_name}</Text>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity onPress={() => openItemModal(item.list_id)} style={styles.viewItemsButton}>
-          <Text style={styles.viewItemsButtonText}>View Items</Text>
+        <TouchableOpacity 
+          onPress={() => fetchItems(item.list_id)} // Fetch items on press
+          style={styles.viewButton}
+        >
+          <Text style={styles.viewButtonText}>View List</Text>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => handleDeleteList(item.list_id)} style={styles.deleteButton}>
           <Text style={styles.deleteButtonText}>X</Text>
         </TouchableOpacity>
       </View>
-    </View>
-  );
-
-  
-  const renderItem = ({ item }) => (
-    <View style={styles.itemCard}>
-      <Image source={{ uri: item.image_url }} style={styles.itemImage} />
-      <Text style={styles.itemName}>{item.item_name}</Text>
-      <Text style={styles.itemPrice}>${item.price}</Text>
     </View>
   );
 
@@ -95,19 +110,26 @@ export default function ListScreen() {
       <Modal
         animationType="slide"
         transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
+        visible={viewItemsModalVisible}
+        onRequestClose={() => setViewItemsModalVisible(false)}
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Items in List</Text>
             <FlatList
               data={items}
-              keyExtractor={(item) => item.item_id.toString()}
-              renderItem={renderItem}
-              contentContainerStyle={styles.itemListContainer}
+              keyExtractor={(item) => item.item_id.toString()} // Assuming item_id is available
+              renderItem={({ item }) => (
+                <View style={styles.itemContainer}>
+                  <Image source={{ uri: item.image_url }} style={styles.itemImage} />
+                  <Text>{item.item_name}</Text>
+                  <Text>Price: ${item.price}</Text>
+                </View>
+              )}
+              contentContainerStyle={styles.listContainer}
               ListEmptyComponent={<Text>No items available</Text>}
             />
-            <TouchableOpacity onPress={() => setModalVisible(false)} style={styles.closeButton}>
+            <TouchableOpacity onPress={() => setViewItemsModalVisible(false)} style={styles.closeButton}>
               <Text style={styles.closeButtonText}>Close</Text>
             </TouchableOpacity>
           </View>
@@ -164,13 +186,13 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  viewItemsButton: {
+  viewButton: {
     backgroundColor: 'blue',
     borderRadius: 5,
     padding: 5,
     marginRight: 10,
   },
-  viewItemsButtonText: {
+  viewButtonText: {
     color: '#fff',
     fontWeight: 'bold',
   },
@@ -198,26 +220,20 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     alignItems: 'center',
   },
-  itemListContainer: {
-    paddingBottom: 20,
+  modalTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
   },
-  itemCard: {
+  itemContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 10,
+    marginVertical: 5,
   },
   itemImage: {
     width: 50,
     height: 50,
-    marginRight: 15,
-  },
-  itemName: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  itemPrice: {
-    fontSize: 16,
-    marginLeft: 'auto',
+    marginRight: 10,
   },
   closeButton: {
     marginTop: 10,
