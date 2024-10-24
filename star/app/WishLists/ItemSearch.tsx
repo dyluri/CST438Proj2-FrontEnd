@@ -14,7 +14,7 @@ const ItemSearch = () => {
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
     const [loading, setLoading] = useState(false);
-
+    const [listLoading, setListLoading] = useState(false);
     const openModal = (item) => {
         setSelectedItem(item);
         getDescription(item);
@@ -82,10 +82,11 @@ const ItemSearch = () => {
     *   wishlist.
     */
     const handleAddItem = async (list, item) => {
+        setListLoading(true);
         const itemDescription = await getDescription(item);
+        setListLoading(false);
+        setListLoading(false);
 
-        closeModal();
-        
         if (!selectedItem) return; // Check if selectedItem is valid
         const truncatedName = item.name.length > 64 ? item.name.slice(0, 61) + '...' : item.name;
         const url = 'https://gentle-caverns-18774-60195da51722.herokuapp.com/items';
@@ -199,17 +200,27 @@ const ItemSearch = () => {
             >
                 <View style={styles.modalContainer}>
                     <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>
-                            Add {selectedItem?.name.slice(0, 20) + (selectedItem?.name.length > 20 ? '...' : '')} to:
-                        </Text>
-                        {listData.length > 0 ? (
-                            <FlatList
-                                data={listData}
-                                renderItem={renderLists}
-                                keyExtractor={(item) => item.list_id.toString()}
-                            />
+
+                        {listLoading ? (
+                            <View style={{ justifyContent: 'center', alignItems: 'center', margin: 20 }}>
+                                <Text>Collecting Info on Item!</Text>
+                                <ActivityIndicator size="large" color="#007BFF" />
+                            </View>
                         ) : (
-                            <Text>You don't have any lists</Text>
+                            <>
+                                <Text style={styles.modalTitle}>
+                                    Add {selectedItem?.name.slice(0, 20) + (selectedItem?.name.length > 20 ? '...' : '')} to:
+                                </Text>
+                                {listData.length > 0 ? (
+                                    <FlatList
+                                        data={listData}
+                                        renderItem={renderLists}
+                                        keyExtractor={(item) => item.list_id.toString()}
+                                    />
+                                ) : (
+                                    <Text>You don't have any lists</Text>
+                                )}
+                            </>
                         )}
                         <Button title="Close" onPress={closeModal} />
                     </View>
@@ -313,6 +324,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
+        marginVertical: 10,
     },
     backButton : {
         backgroundColor: 'red',

@@ -19,7 +19,7 @@ export default function RootLayout() {
                     <Stack.Screen
                         name="item"
                         component={ItemScreen}
-                        options={{ headerShown: false }}
+                        options={{ headerShown: false, animation:'none' }}
                     />
                     <Stack.Screen
                         name="itemEdit"

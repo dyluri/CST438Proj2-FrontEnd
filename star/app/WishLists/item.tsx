@@ -50,6 +50,35 @@ export default function ItemScreen({ route, navigation }) {
             setLoading(false);
         }
     };
+
+    const deleteItem = async (itemId) => {
+        console.log("started");
+        setLoading(true);
+        const url = `https://gentle-caverns-18774-60195da51722.herokuapp.com/items?list_id=${listId}`;
+        try {
+            const response = await fetch(url, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    item_id: itemId
+                }),
+            });
+
+            const data = await response.json();
+            console.log(data);
+            setListData(data);
+            Toast.show({ type: 'error', text1: "Item deleted" });
+        } catch (error) {
+            Toast.show({ type: 'error', text1: "Error deleting item from list" });
+            console.error('Error:', error);
+        } finally {
+            setLoading(false);
+            navigator.replace('item', { listId: listId });
+        }
+    };
+
     const handlePress = (item) => {
         Linking.openURL(item.item_url);
     };
@@ -68,7 +97,7 @@ export default function ItemScreen({ route, navigation }) {
             <Text style={{fontSize:16}}> Quantity: {item.quantity ? item.quantity : "not set"}</Text>
             <Button title="Edit Item" onPress={() => navigator.navigate('itemEdit', {item: item})} />
             <View style={{padding:5}}/>
-            <Button title="Remove Item" onPress={() => navigator.navigate('itemEdit')} color={'red'} />
+            <Button title="Remove Item" onPress={() => deleteItem(item.item_id)} color={'red'} />
         </View>
     );
 
@@ -80,7 +109,6 @@ export default function ItemScreen({ route, navigation }) {
     );
 
     return (
-
         <View style={styles.container}>
             <View style={styles.header}>
                 <View style={{ flex: 1, flexDirection: 'row', }}>
@@ -117,8 +145,6 @@ export default function ItemScreen({ route, navigation }) {
                     </View>
                 </View>
             )}
-
-
         </View>
     );
 }
