@@ -23,7 +23,7 @@ const LoginScreen = () => {
       const response = await axios.put(
         `${backEndURL}?username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`,
       );
-      console.log(data);
+      console.log(response.data.user_id);
       if (response.status == 200) {
         console.log('Login Successful')
       } else {
