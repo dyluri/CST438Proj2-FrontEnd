@@ -1,20 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, StyleSheet, Modal, Button, TextInput, FlatList, TouchableOpacity} from 'react-native';
+import Toast from 'react-native-toast-message';
 import axios from 'axios';
+import bcrypt from 'react-native-bcrypt';
+import { UserContext } from '@/components/Currentuser';
 
 export default function UserScreen() {
+  const {userId, username, setUsername, setUserId} = useContext(UserContext);
   const [listData, setListData] = useState([]);
   const [modalOneVisible, setModalOneVisible] = useState(false);
   const [newUsername, setNewUsername] = useState('');
+  const [hash, setHash] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [password, setPassword] = useState('');
   const [modalTwoVisible, setModalTwoVisible] = useState(false);
-  const [warnings, setWarnings] = useState({ newUsername: '', newPassword: '', password: '', general: ''});
+  const [warnings, setWarnings] = useState({ newUsernameT: '', newPasswordT: '', passwordT: '', generalT: ''});
   const buttons = [{ id: '1', text: 'Confirm', onPress: () => commitAction() }, { id: '2', text: 'Cancel', onPress: () => closeModal() }];
-  const url = 'https://gentle-caverns-18774-60195da51722.herokuapp.com/';
   // TODO: change user_id an username to dynamic from login
-  const user_id = 27;
-  const username = 'Pineapple';
 
   const openModal = ( option ) => {
     if (option == 1) {
@@ -25,7 +27,10 @@ export default function UserScreen() {
   }
 
   const closeModal = () => {
-    setWarnings({ newUsername: '', newPassword: '', password: '', general: '' });
+    setWarnings({ newUsernameT: '', newPasswordT: '', passwordT: '', generalT: '' });
+    setNewPassword('');
+    setNewUsername('');
+    setPassword('');
     if (modalOneVisible) {
       setModalOneVisible(false);
     } else {
@@ -33,12 +38,31 @@ export default function UserScreen() {
     }
   }
 
+  const logOut = async () => {
+    const options = {
+      method: 'PUT',
+      url: 'https://gentle-caverns-18774-60195da51722.herokuapp.com/logout',
+      params: {
+        'username': username,
+      }
+    };
+    try {
+      const response = await axios.request(options);
+      Toast.show({ type: 'success', text1: 'Logged Out' });
+      setUsername('fail');
+      setUserId(-1);
+      closeModal();
+    } catch (error) {
+      console.error('Error loging out user:', error);
+    }
+  }
+
   const deleteUser = async () => {
+    setWarnings({ ...warnings, passwordT: '' });
     if (password == '') {
-      setWarnings({ ...warnings, password: '*Password is required to delete user.' });
+      setWarnings({ ...warnings, passwordT: '*Password is required to delete user.' });
       return;
     }
-    setWarnings({ ...warnings, password: '' });
 
     const options = {
       method: 'DELETE',
@@ -50,19 +74,36 @@ export default function UserScreen() {
     };
     try {
       const response = await axios.request(options);
-      console.log('user deleted');
+      Toast.show({ type: 'success', text1: 'Account Deleted' });
+      setUsername('fail');
+      setUserId(-1);
       closeModal();
     } catch (error) {
-      console.error('Error deleting user:', error);
+      setWarnings({ ...warnings, passwordT: '*Incorrect Password.' });
+      // console.error('Error deleting user:', error);
     }
   }
 
+  const getHashPass = (newPassword) => {
+    return new Promise((resolve, reject) => {
+      const saltRounds = 10;
+      bcrypt.hash(newPassword, saltRounds, (err, hashedPassword) => {
+        if (err) {
+          reject('Error hashing password: ' + err);
+        } else {
+          resolve(hashedPassword);
+        }
+      });
+    });
+  };  
+
   const updateUser = async () => {
-    setWarnings({ newUsername: '', newPassword: '', password: '', general: '' });
+    var pass = true;
+    setWarnings({ newUsernameT: '', newPasswordT: '', passwordT: '', generalT: '' });
   
     if (newUsername == '' && newPassword == '') {
-      setWarnings({ ...warnings, general: '*At least one field must be filled out(new username or new password)' });
-      return;
+      setWarnings({ ...warnings, generalT: '*At least one field must be filled out(new username or new password)' });
+      pass = false;
     }
   
     const params: { [key: string]: any } = {};
@@ -70,49 +111,69 @@ export default function UserScreen() {
     if (newUsername != '') {
       if (newUsername.length > 3) {
         params['new_username'] = newUsername;
-        setWarnings((prev) => ({ ...prev, newUsername: '' }));
+        setWarnings((prev) => ({ ...prev, newUsernameT: '' }));
+        if (username == newUsername) {
+          setWarnings((prev) => ({ ...prev, newUsernameT: '*Username needs to be different' }));
+          pass = false;
+        }
       } else {
-        setWarnings((prev) => ({ ...prev, newUsername: '*Username too short' }));
-        return;
+        setWarnings((prev) => ({ ...prev, newUsernameT: '*Username too short' }));
+        pass = false;
       }
     }
   
     if (newPassword != '') {
       if (newPassword.length > 3) {
-        params['new_password'] = newPassword;
-        setWarnings((prev) => ({ ...prev, newPassword: '' }));
+        await getHashPass(newPassword).then((hashedPassword) => {
+          setHash(hashedPassword);
+        }).catch((error) => {
+          console.error(error);
+        });
+        console.log(hash);
+        params['new_password'] = hash;
+        setWarnings((prev) => ({ ...prev, newPasswordT: '' }));
       } else {
-        setWarnings((prev) => ({ ...prev, newPassword: '*Password too short' }));
-        return;
+        setWarnings((prev) => ({ ...prev, newPasswordT: '*Password too short' }));
+        pass = false;
       }
     }
   
     if (password == '') {
-      setWarnings((prev) => ({ ...prev, password: '*Password is required to update user.' }));
+      setWarnings((prev) => ({ ...prev, passwordT: '*Password is required to update user.' }));
+      pass = false;
+    }
+
+    if (!pass) {
       return;
     }
-  
+
     const options = {
       method: 'PUT',
       url: 'https://gentle-caverns-18774-60195da51722.herokuapp.com/users/update',
       params: {
         'username': username,
         'password': password,
-        'new_username': params['new_username'] || '',
-        'new_password': params['new_password'] || '',
+        'new_username': params['new_username'],
+        'new_password': params['new_password'],
       }
     };
-  
+    
     try {
       const response = await axios.request(options);
-      console.log('user updated');
+      if (newUsername != '') {
+        setUsername(newUsername);
+      }
+      Toast.show({ type: 'success', text1: 'Profile updated succesfully' });
       closeModal();
     } catch (error) {
+      if (error.response.status === 401) {
+        setWarnings({ ...warnings, passwordT: '*Incorrect Password.' });
+        return;
+      }
       console.error('Error updating user:', error);
     }
   }
   
-
   const commitAction = () => {
     if (newUsername.trim() == '') setNewUsername('');
     if (newPassword.trim() == '') setNewPassword('');
@@ -133,7 +194,7 @@ export default function UserScreen() {
                 method: 'GET',
                 url: 'https://gentle-caverns-18774-60195da51722.herokuapp.com/lists',
                 params: {
-                    'user_id': user_id,
+                    'user_id': userId,
                 }
             };
             try {
@@ -160,41 +221,45 @@ export default function UserScreen() {
   
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Hello, {username}</Text>
+      <Text style={styles.text}>Hello, {username && username !== 'fail' ? username : "login to view profile"}</Text>
 
       <View style={styles.line} />
       
-      <Text style={styles.subHeader}>My Wishlists</Text>
-      
-      <View style={styles.whishlist}>
-        {listData.length > 0 ? (
-          <FlatList
-            data={listData}
-            renderItem={renderLists}
-            keyExtractor={(item) => item.list_id.toString()}
-            style={styles.flatList}
-          />
-          ) : (
-            <View style={styles.listItem}>
-              <Text>You don't have any lists</Text>
+      {
+        username !== 'fail' ? (
+          <>
+            <Text style={styles.subHeader}>My Wishlists</Text>
+            <View style={styles.whishlist}>
+              {listData.length > 0 ? (
+                <FlatList
+                  data={listData}
+                  renderItem={renderLists}
+                  keyExtractor={(item) => item.list_id.toString()}
+                  style={styles.flatList}
+                />
+              ) : (
+                <View style={styles.listItem}>
+                  <Text>You don't have any lists</Text>
+                </View>
+              )}
             </View>
-          )
-        }
-      </View>
+            <View style={styles.line} />
+            <View>
+              <Text style={styles.subHeader}>Options</Text>
+              <TouchableOpacity style={styles.buttons} onPress={() => openModal(1)}>
+                <Text style={styles.buttonText}>Update Account</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.buttons} onPress={() => openModal(0)}>
+                <Text style={styles.buttonText}>Delete Account</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.buttons} onPress={() => logOut()}>
+                <Text style={styles.buttonText}>Log Out</Text>
+              </TouchableOpacity>
+            </View>
+          </>
+        ) : null
+      }
 
-      <View style={styles.line} />
-
-      <Text style={styles.subHeader}>Options</Text>
-      <View>
-        {/*edit to a button to pop up modal */}
-        <TouchableOpacity style={styles.buttons} onPress={() => openModal(1)}>
-                    <Text style={styles.buttonText}>Update Account</Text>
-        </TouchableOpacity>
-        {/*edit to a button to pop up modal */}
-        <TouchableOpacity style={styles.buttons} onPress={() => openModal(0)}>
-                    <Text style={styles.buttonText}>Delete Account</Text>
-        </TouchableOpacity>
-      </View>
 
       {/* Modal for Updating Account */}
       <Modal
@@ -214,7 +279,7 @@ export default function UserScreen() {
               value={newUsername}
               onChangeText={(text) => setNewUsername(text)}
             />
-            {warnings.newUsername ? <Text style={styles.errorText}>{warnings.newUsername}</Text> : null}
+            {warnings.newUsernameT ? <Text style={styles.errorText}>{warnings.newUsernameT}</Text> : null}
             <Text>Update Password (Optional)</Text>
             <TextInput
               style={styles.inputBox}
@@ -223,7 +288,7 @@ export default function UserScreen() {
               value={newPassword}
               onChangeText={(text) => setNewPassword(text)}
             />
-            {warnings.newPassword ? <Text style={styles.errorText}>{warnings.newPassword}</Text> : null}
+            {warnings.newPasswordT ? <Text style={styles.errorText}>{warnings.newPasswordT}</Text> : null}
             <Text>Confirmation Required</Text>
             <TextInput
               style={styles.inputBox}
@@ -232,8 +297,8 @@ export default function UserScreen() {
               value={password}
               onChangeText={(text) => setPassword(text)}
             />
-            {warnings.password ? <Text style={styles.errorText}>{warnings.password}</Text> : null}
-            {warnings.general ? <Text style={styles.errorText}>{warnings.general}</Text> : null}
+            {warnings.passwordT ? <Text style={styles.errorText}>{warnings.passwordT}</Text> : null}
+            {warnings.generalT ? <Text style={styles.errorText}>{warnings.generalT}</Text> : null}
             <FlatList
               data={buttons}
               renderItem={renderButtons}
@@ -264,7 +329,7 @@ export default function UserScreen() {
               value={password}
               onChangeText={(text) => setPassword(text)}
             />
-            {warnings.password ? <Text style={styles.errorText}>{warnings.password}</Text> : null}
+            {warnings.passwordT ? <Text style={styles.errorText}>{warnings.passwordT}</Text> : null}
             <FlatList
               data={buttons}
               renderItem={renderButtons}
@@ -276,6 +341,7 @@ export default function UserScreen() {
           </View>
         </View>
       </Modal>
+      <Toast/>
     </View>
   );
 }
@@ -294,6 +360,7 @@ const styles = StyleSheet.create({
     fontSize: 18, 
     fontWeight: 'bold',
     margin: 5,
+    textAlign: 'center'
   },
   modalContainer: {
     flex: 1,
@@ -359,6 +426,8 @@ const styles = StyleSheet.create({
   },
   whishlist: {
     height: '33%',
+    width: '80%',
+    alignItems: 'center',
     borderRadius: 10,
     paddingVertical: 10,
     paddingHorizontal: '10%',
