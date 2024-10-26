@@ -1,16 +1,15 @@
 import React, { useContext, useState } from 'react';
 import { View, TextInput, Button, StyleSheet, Text, Alert } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import { UserContext } from '@/components/Currentuser';
+import {CommonActions } from '@react-navigation/native';
 
 const backEndURL = 'https://gentle-caverns-18774-60195da51722.herokuapp.com/login';
 
-const LoginScreen = () => {
+const LoginScreen = ({navigation}) => {
   const [localusername, setLocalUsername] = useState('');
   const [password, setPassword] = useState('');
   const {setUsername, setUserId } = useContext(UserContext);
-
 
   const handleLogin = async () => {
     try {
@@ -25,6 +24,18 @@ const LoginScreen = () => {
       }
       setUsername(response.data.username);
       setUserId(response.data.user_id);
+      if(response.data.is_admin){
+        console.log("IS ADMIN NOW WORKS.");
+        // navigation.dispatch(
+        //   CommonActions.reset({
+        //     index: 0,
+        //     routes: [{ name: 'adminlist' }],
+        //   })
+        // );
+        navigation.navigate('adminlist');
+        console.log('Navigation Object:', navigation);
+        console.log(navigation.getState());
+      }
     } catch (err) {
       console.error('Error during login:', err);
     }
@@ -47,7 +58,13 @@ const LoginScreen = () => {
         secureTextEntry
       />
       <Button title="Login" onPress={handleLogin} />
+      <Button
+  title="Go to Admin List"
+  onPress={() => navigation.navigate('adminlist')}
+/>
+
     </View>
+
   );
 }
 
