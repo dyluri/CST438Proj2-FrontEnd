@@ -35,6 +35,8 @@ const LoginScreen = ({navigation}) => {
         navigation.navigate('adminlist');
         console.log('Navigation Object:', navigation);
         console.log(navigation.getState());
+      }else{
+        navigation.navigate('WishLists');
       }
     } catch (err) {
       console.error('Error during login:', err);

@@ -5,22 +5,25 @@ import UserScreen from './user';
 import LoginScreen from './login';
 import ItemSearch  from './ItemSearch';
 import AdminList from './adminlist';
+import { Tabs } from 'expo-router';
 import React from 'react';
-import Icon from 'react-native-vector-icons/Ionicons';
+
+import { Colors } from '@/constants/Colors';
 import { CurrentUser } from '@/components/Currentuser';
+import Icon from 'react-native-vector-icons/Ionicons';
 
 const Tab = createBottomTabNavigator();
 
 export default function Layout() {
   return (
     <CurrentUser>
-    <Tab.Navigator
-      screenOptions={{
-        headerShown: false,
-        tabBarShowLabel: true,
-      }}
-    >
-      <Tab.Screen
+           <Tabs
+                screenOptions={{
+                    tabBarActiveTintColor: Colors['light'].tint,
+                    headerShown: false,
+                }}
+                >
+      <Tabs
               name="Home"
               component={HomeScreen}
               options={{
@@ -32,7 +35,7 @@ export default function Layout() {
 
 
       />
-            <Tab.Screen
+            <Tabs
               name="login"
               component={LoginScreen}
               options={{
@@ -45,7 +48,7 @@ export default function Layout() {
 
       />
 
-      <Tab.Screen
+      <Tabs
         name="ItemSearch"
         component={ItemSearch}
         options={{
@@ -55,8 +58,7 @@ export default function Layout() {
         }}
       />
 
-
-            <Tab.Screen
+      <Tabs
         name="user"
         component={UserScreen} 
         options={{
@@ -65,17 +67,8 @@ export default function Layout() {
           ),
         }}
       />
-                  <Tab.Screen
-        name="adminlist"
-        component={AdminList} 
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Icon name="person-outline" color={color} size={size} />
-          ),
-        }}
-      />
 
-      <Tab.Screen
+      <Tabs
         name="settings"
         component={SettingsScreen}
         options={{
@@ -84,8 +77,16 @@ export default function Layout() {
           ),
         }}
       />
-    </Tab.Navigator>
-    
+                  <Tabs
+        name="adminlist"
+        component={AdminList} 
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Icon name="person-outline" color={color} size={size} />
+          ),
+        }}
+      />
+  </Tabs>
     </CurrentUser>
   );
 }
